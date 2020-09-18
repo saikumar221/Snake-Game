@@ -10,6 +10,21 @@ background.src = "images/ground.png";
 
 const foodImg = new Image();
 foodImg.src = "images/food.png";
+
+const dead = new Audio();
+const eat = new Audio();
+const up = new Audio();
+const down = new Audio();
+const right = new Audio();
+const left = new Audio();
+
+dead.src = "audio/dead.mp3"
+eat.src = "audio/eat.mp3"
+up.src = "audio/up.mp3"
+down.src = "audio/down.mp3"
+right.src = "audio/right.mp3"
+left.src = "audio/left.mp3"
+
 let snake = [];
 snake[0] = {
     x : 9 * box,
@@ -20,7 +35,36 @@ let food = {
     y : Math.floor(Math.random()*15+3) * box
 }
 let score =0;
+let d;
 
+document.addEventListener("keydown",direction)
+
+function direction(event){
+    if(event.keyCode == 37&& d!= "RIGHT"){
+        left.play();
+        d = "LEFT";
+    }
+    else if(event.keyCode == 38 && d!= "DOWN"){
+        up.play()
+        d = "UP";
+    }
+    else if(event.keyCode == 39 && d!= "LEFT"){
+        right.play()
+        d = "RIGHT";
+    }
+    else if(event.keyCode == 40 && d!= "UP"){
+        down.play()
+        d = "DOWN";
+    }
+}
+
+function collision(head, array){
+    for(let i =0; i< array.length; i++){
+        if(head.x == array[i].x && head.y == array[i].y)
+        return true
+    }
+    return false;
+}
 function draw(){
     ctx.drawImage(background,0,0);
 
@@ -34,6 +78,37 @@ function draw(){
 
     ctx.drawImage(foodImg,food.x,food.y);
 
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+     
+    if( d == "LEFT") snakeX -= box;
+    if( d == "UP") snakeY -= box;
+    if( d == "RIGHT") snakeX += box;
+    if( d == "DOWN") snakeY += box;
+
+    if(snakeX == food.x && snakeY == food.y){
+        eat.play();
+        score++;
+        food = {
+            x : Math.floor(Math.random()*17+1) * box,
+            y : Math.floor(Math.random()*15+3) * box
+        }
+    }
+    else
+        snake.pop();
+
+        let newHead = {
+            x : snakeX,
+            y : snakeY
+        }
+    if (snakeX < box || snakeX > 17*box 
+            || snakeY < 3*box || snakeY > 17*box
+            || collision(newHead, snake)){
+        dead.play()
+        clearInterval(game)
+        }
+
+    snake.unshift(newHead);
     ctx.fillStyle = "black";
     ctx.font = "40px Change one"
     ctx.fillText(score,2*box,1.6*box);
