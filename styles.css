@@ -1,0 +1,12 @@
+canvas {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+#confetti{
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}
