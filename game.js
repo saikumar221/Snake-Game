@@ -8,14 +8,19 @@ const right = new Audio();
 const left = new Audio();
 const cheer = new Audio();
 
+
+
 const box = 32;
 const cvs = document.getElementById("gamescreen");
 const ctx = cvs.getContext("2d");
 let message = "Your Score is: "
 let snake = [];
 let score = 0;
+localStorage.getItem('topScores')?localStorage.getItem('topScores'):[0];
+countWins(score);
 let d;
 let highestScore = localStorage.getItem('highestScore') ? localStorage.getItem('highestScore') : 0 ;
+
 foodImg.src = "images/food.png";
 background.src = "images/ground.png";
 dead.src = "audio/dead.mp3";
@@ -111,10 +116,12 @@ function draw() {
     else{
         dead.play();
     }
+    countWins(score);
     setTimeout(() =>{
-        alert("Game Over! \n"+ message + score + "\nWanna Play Again ?"); 
+        // alert("Game Over! \n"+ message + score + "\nWanna Play Again ?"); 
         window.location.reload()
-    },2500)
+    },500)
+    
   }
 
   snake.unshift(newHead);
@@ -522,4 +529,34 @@ window.addEventListener('resize', function(event){
 confetti.resize();
 });
 }
+
+function countWins(score){
+  console.log("my score",score);
+  var topScores=localStorage.getItem('topScores')?localStorage.getItem('topScores'):[0];
+  topScores=JSON.parse(topScores);
+  console.log(topScores);
+  console.log(topScores.length);
+  if(topScores.length<5&&!topScores.includes(score)){
+    topScores.push(score);
+  }
+  else if(topScores.length>=5&&!topScores.includes(score)&&Math.min(...topScores)<score){
+      topScores[topScores.indexOf(Math.min(...topScores))]=score;
+
+  }
+  topScores.sort((score1,score2)=>{
+    return score2-score1;
+  })
+  var countWinBodyScore=document.querySelector('.countWinsBody-scores');
+  countWinBodyScore.innerHTML='';
+  topScores.forEach(score => {
+    
+    var scoreEle=document.createElement('div');
+    scoreEle.className="allScores";
+    scoreEle.innerHTML=`Score is : ${score}`;
+    countWinBodyScore.appendChild(scoreEle);
+  });
+  topScores=JSON.stringify(topScores);
+  localStorage.setItem('topScores',topScores);
+}
+
 
