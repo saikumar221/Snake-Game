@@ -15,7 +15,7 @@ let message = "Your Score is: "
 let snake = [];
 let score = 0;
 let d;
-let highestScore = localStorage.getItem('highestScore') ? localStorage.getItem('highestScore') : 0 ;
+let highestScore = JSON.parse(localStorage.getItem('highestScore')) || [];
 foodImg.src = "images/food.png";
 background.src = "images/ground.png";
 dead.src = "audio/dead.mp3";
@@ -101,27 +101,46 @@ function draw() {
     collision(newHead, snake)
   ) {
     clearInterval(game);
-    if (highestScore == score || score > highestScore){
-    cheer.play()
-    confy()
-    highestScore = score > highestScore ? score : highestScore
-    localStorage.setItem('highestScore',highestScore);
-    message = "Your new high Score is: "
-    }
-    else{
+    if (highestScore.length < 5) {
+      cheer.play();
+      confy();
+      highestScore.push(score);
+      highestScore.sort((a, b) => b - a)
+      localStorage.setItem("highestScore", JSON.stringify(highestScore));
+      message = "Your new high Score is: ";
+    } else {
+      if (score > highestScore[highestScore.length - 1]) {
+        cheer.play();
+        confy();
+        highestScore.push(score);
+        highestScore.sort((a, b) => b - a)
+        highestScore.pop()
+        localStorage.setItem("highestScore", JSON.stringify(highestScore));
+        message = "Your new high Score is: ";
+      } else {
         dead.play();
+      }
     }
-    setTimeout(() =>{
-        alert("Game Over! \n"+ message + score + "\nWanna Play Again ?"); 
-        window.location.reload()
-    },2500)
+    setTimeout(() => {
+      alert("Game Over! "
+        + message + score
+        + '\nLeaderboard'
+        + "\n1st place: " + (highestScore[0]) 
+        + "\n2nd place: " + (highestScore[1] || 'play to get on the leaderboard') 
+        + "\n3rd place: " + (highestScore[2] || 'play to get on the leaderboard')
+        + "\n4th place: " + (highestScore[3] || 'play to get on the leaderboard')
+        + "\n5th place: " + (highestScore[4] || 'play to get on the leaderboard')
+        + "\n\nWanna Play Again ?");
+      window.location.reload();
+    }, 2500)
+    
   }
 
   snake.unshift(newHead);
   ctx.fillStyle = "black";
   ctx.font = "40px Change one";
   ctx.fillText(score, 2 * box, 1.6 * box);
-  ctx.fillText('Highest Score: '+ highestScore,6 * box,1.6 * box)
+  ctx.fillText('Highest Score: '+ (highestScore[0] || ' '),6 * box,1.6 * box)
 }
 
 let game = setInterval(draw, 100);
