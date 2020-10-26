@@ -1,4 +1,6 @@
 const background = new Image();
+const background1 = new Image();
+const background2 = new Image();
 const foodImg = new Image();
 const dead = new Audio();
 const eat = new Audio();
@@ -18,6 +20,8 @@ let d;
 let highestScore = localStorage.getItem('highestScore') ? localStorage.getItem('highestScore') : 0 ;
 foodImg.src = "images/food.png";
 background.src = "images/ground.png";
+background1.src = "images/groundblue.png";
+background2.src = "images/groundcherry.png";
 dead.src = "audio/dead.mp3";
 eat.src = "audio/eat.mp3";
 up.src = "audio/up.mp3";
@@ -60,7 +64,14 @@ function collision(head, array) {
   return false;
 }
 function draw() {
-  ctx.drawImage(background, 0, 0);
+    ctx.drawImage(background, 0, 0);
+    if (score >= 10) {
+        ctx.drawImage(background1, 0, 0);
+    }
+    if (score >= 15) {
+        ctx.drawImage(background2, 0, 0);
+    }
+
 
   for (let i = 0; i < snake.length; i++) {
     ctx.fillStyle = i == 0 ? "green" : "white";
@@ -118,7 +129,7 @@ function draw() {
   }
 
   snake.unshift(newHead);
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "white";
   ctx.font = "40px Change one";
   ctx.fillText(score, 2 * box, 1.6 * box);
   ctx.fillText('Highest Score: '+ highestScore,6 * box,1.6 * box)
@@ -522,4 +533,3 @@ window.addEventListener('resize', function(event){
 confetti.resize();
 });
 }
-
